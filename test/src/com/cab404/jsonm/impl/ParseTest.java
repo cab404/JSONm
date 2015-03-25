@@ -1,16 +1,12 @@
 package com.cab404.jsonm.impl;
 
 import junit.framework.Assert;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import static com.cab404.jsonm.core.TemplateInsertion.arr;
-import static com.cab404.jsonm.core.TemplateInsertion.ins;
-
 @RunWith(JUnit4.class)
-public class UtilitiesTest {
+public class ParseTest {
 
     @Test
     public void indexOf() {

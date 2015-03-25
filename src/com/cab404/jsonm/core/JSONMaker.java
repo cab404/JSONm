@@ -10,6 +10,11 @@ public interface JSONMaker {
 
     public Object make(String templateName, Object... params);
 
+    Object eval(TemplateInsertion ins);
+
+    /**
+     * Adds new template. Template should be an JSONObject
+     */
     public JSONMaker add(String templateName, String expression);
 
 }

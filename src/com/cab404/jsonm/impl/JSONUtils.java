@@ -7,12 +7,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static com.cab404.jsonm.impl.SimpleJSONTemplate.ITEM_REPLACER;
 import static com.cab404.jsonm.impl.SimpleJSONTemplate.NUM_FIELD_START;
 
 /**
- * Sorry for no comments!
+ * Some useful methods.
  * Created at 1:33 on 15.02.15
  *
  * @author cab404
@@ -20,7 +21,7 @@ import static com.cab404.jsonm.impl.SimpleJSONTemplate.NUM_FIELD_START;
 
 public class JSONUtils {
 
-    protected static void recurseThroughArray(List<List<JSONAddressNode>> targets, List<JSONAddressNode> cur_path, JSONArray object) throws JSONException {
+    public static void recurseThrough(List<List<JSONAddressNode>> targets, List<JSONAddressNode> cur_path, JSONArray object) throws JSONException {
         for (int key = 0; key < object.length(); key++) {
             Object o = object.get(key);
 
@@ -38,19 +39,19 @@ public class JSONUtils {
             if (o instanceof JSONArray) {
                 List<JSONAddressNode> copied_path = new ArrayList<>(cur_path);
                 copied_path.add(new JSONArrayAddressNode(key));
-                recurseThroughArray(targets, copied_path, (JSONArray) o);
+                recurseThrough(targets, copied_path, (JSONArray) o);
             }
 
             if (o instanceof JSONObject) {
                 List<JSONAddressNode> copied_path = new ArrayList<>(cur_path);
                 copied_path.add(new JSONArrayAddressNode(key));
-                recurseThroughObject(targets, copied_path, (JSONObject) o);
+                recurseThrough(targets, copied_path, (JSONObject) o);
             }
 
         }
     }
 
-    protected static void recurseThroughObject(List<List<JSONAddressNode>> targets, List<JSONAddressNode> cur_path, JSONObject object) throws JSONException {
+    public static void recurseThrough(List<List<JSONAddressNode>> targets, List<JSONAddressNode> cur_path, JSONObject object) throws JSONException {
         JSONArray names = object.names();
         if (names == null) return;
 
@@ -77,13 +78,13 @@ public class JSONUtils {
             if (o instanceof JSONArray) {
                 List<JSONAddressNode> copied_path = new ArrayList<>(cur_path);
                 copied_path.add(new JSONObjectAddressNode(key));
-                recurseThroughArray(targets, copied_path, (JSONArray) o);
+                recurseThrough(targets, copied_path, (JSONArray) o);
             }
 
             if (o instanceof JSONObject) {
                 List<JSONAddressNode> copied_path = new ArrayList<>(cur_path);
                 copied_path.add(new JSONObjectAddressNode(key));
-                recurseThroughObject(targets, copied_path, (JSONObject) o);
+                recurseThrough(targets, copied_path, (JSONObject) o);
             }
 
         }
@@ -93,14 +94,14 @@ public class JSONUtils {
     /**
      * Creates deep copy of JSONArray
      */
-    protected static JSONArray recursiveCloneJsonArray(JSONArray array) throws JSONException {
+    public static JSONArray recursiveClone(JSONArray array) throws JSONException {
         JSONArray copy = new JSONArray();
         for (int i = 0; i < array.length(); i++) {
             Object obj = array.opt(i);
             if (obj instanceof JSONArray)
-                copy.put(i, recursiveCloneJsonArray(((JSONArray) obj)));
+                copy.put(i, recursiveClone(((JSONArray) obj)));
             else if (obj instanceof JSONObject)
-                copy.put(i, recursiveCloneJsonObject(((JSONObject) obj)));
+                copy.put(i, recursiveClone(((JSONObject) obj)));
             else
                 copy.put(i, obj);
 
@@ -111,15 +112,15 @@ public class JSONUtils {
     /**
      * Creates deep copy of JSONObject
      */
-    protected static JSONObject recursiveCloneJsonObject(JSONObject object) throws JSONException {
+    public static JSONObject recursiveClone(JSONObject object) throws JSONException {
         JSONObject copy = new JSONObject();
 
         for (String i : getIterable(object.keys())) {
             Object obj = object.opt(i);
             if (obj instanceof JSONArray)
-                copy.put(i, recursiveCloneJsonArray(((JSONArray) obj)));
+                copy.put(i, recursiveClone(((JSONArray) obj)));
             else if (obj instanceof JSONObject)
-                copy.put(i, recursiveCloneJsonObject(((JSONObject) obj)));
+                copy.put(i, recursiveClone(((JSONObject) obj)));
             else
                 copy.put(i, obj);
         }
@@ -130,7 +131,7 @@ public class JSONUtils {
     /**
      * Wraps iterator into iterable
      */
-    protected static <T> Iterable<T> getIterable(final Iterator<T> i) {
+    public static <T> Iterable<T> getIterable(final Iterator<T> i) {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {

@@ -8,6 +8,6 @@ package com.cab404.jsonm.core;
  */
 public interface JSONTemplate {
 
-    public Object make(Object... parameters);
+    public Object make(JSONMaker parent, Object... parameters);
 
 }

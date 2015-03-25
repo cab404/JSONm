@@ -1,5 +1,6 @@
 package com.cab404.jsonm.impl;
 
+import com.cab404.jsonm.core.JSONMaker;
 import com.cab404.jsonm.core.JSONTemplate;
 import org.json.JSONObject;
 
@@ -25,6 +26,9 @@ public class SimpleJSONTemplate implements JSONTemplate {
     protected final List<List<JSONAddressNode>> targets;
     protected final JSONObject original;
 
+    /**
+     * Makes a new JSONTemplate. For a replace char look in {@link #USER_ITEM_REPLACER}
+     */
     public SimpleJSONTemplate(CharSequence expression) {
 
         StringBuilder builder = stringBuilder(expression);
@@ -35,7 +39,7 @@ public class SimpleJSONTemplate implements JSONTemplate {
 
         for (int i = 0; i < count; i++) targets.add(null);
 
-        JSONUtils.recurseThroughObject(targets, new ArrayList<JSONAddressNode>(), original);
+        JSONUtils.recurseThrough(targets, new ArrayList<JSONAddressNode>(), original);
 
     }
 
@@ -82,11 +86,11 @@ public class SimpleJSONTemplate implements JSONTemplate {
     }
 
     public JSONObject obtainTemplateCopy() {
-        return JSONUtils.recursiveCloneJsonObject(original);
+        return JSONUtils.recursiveClone(original);
     }
 
     @Override
-    public Object make(Object... parameters) {
+    public Object make(JSONMaker parent, Object... parameters) {
 
         /* Checking if length of parameter array is matching such in our template */
         if (parameters.length != targets.size())

@@ -19,12 +19,25 @@ public class SimpleJSONMaker implements JSONMaker {
 
     public SimpleJSONMaker() {
         library = new HashMap<>();
-        library.put(TemplateInsertion.ARRAY_KEY, new JSONArrayTemplate());
+        library.put(JSONArrayTemplate.KEY, new JSONArrayTemplate());
+        library.put(JSONObjectTemplate.KEY, new JSONObjectTemplate());
+    }
+
+    /**
+     * Insertion of a template
+     */
+    public static TemplateInsertion ins(String templateName, Object... parameters) {
+        return new TemplateInsertion(templateName, parameters);
     }
 
     @Override
     public Object make(String templateName, Object... params) {
         return this.makeFromArray(templateName, params);
+    }
+
+    @Override
+    public Object eval(TemplateInsertion ins) {
+        return this.makeFromArray(ins.templateName, ins.parameters);
     }
 
     public Object makeFromArray(String templateName, Object[] params) {
@@ -34,13 +47,18 @@ public class SimpleJSONMaker implements JSONMaker {
                 params[i] = makeFromArray(params_ins.templateName, params_ins.parameters);
             }
 
-        return library.get(templateName).make(params);
+        return library.get(templateName).make(this, params);
     }
 
 
     @Override
     public JSONMaker add(String templateName, String expression) {
         library.put(templateName, new SimpleJSONTemplate(expression));
+        return this;
+    }
+
+    protected JSONMaker add(String templateName, JSONTemplate template) {
+        library.put(templateName, template);
         return this;
     }
 

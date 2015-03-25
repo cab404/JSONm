@@ -7,7 +7,6 @@ package com.cab404.jsonm.core;
  * @author cab404
  */
 public class TemplateInsertion {
-    public static final String ARRAY_KEY = "$array";
 
     public final String templateName;
     public final Object[] parameters;
@@ -17,12 +16,5 @@ public class TemplateInsertion {
         this.parameters = parameters;
     }
 
-    public static TemplateInsertion ins(String templateName, Object... parameters) {
-        return new TemplateInsertion(templateName, parameters);
-    }
-
-    public static TemplateInsertion arr(Object... parameters) {
-        return new TemplateInsertion(ARRAY_KEY, parameters);
-    }
 
 }
