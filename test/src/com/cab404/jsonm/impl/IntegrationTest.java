@@ -77,4 +77,31 @@ public class IntegrationTest {
 
     }
 
+    public static class TestClass0 {
+        public int intVal = 42;
+        public long longVal = 90000000000000001l;
+    }
+
+    @Test
+    public void serialize() throws Exception {
+        JSONSerializer<TestClass0> serializer = new JSONSerializer<>(TestClass0.class);
+
+        TestClass0 obj = new TestClass0();
+        JSONObject serialized = serializer.serialize(obj, new JSONObject());
+
+        Assert.assertTrue(new JSONObject("{'intVal':42,'longVal':90000000000000001}").similar(serialized));
+
+        serialized.put("intVal", 71);
+        serialized.put("longVal", 88);
+
+        serializer.deserialize(serialized, obj);
+
+        Assert.assertEquals(obj.intVal, 71);
+        Assert.assertEquals(obj.longVal, 88);
+
+//        Assert.assertTrue(serialized);
+
+    }
+
+
 }

@@ -1,12 +1,14 @@
 package com.cab404.jsonm.impl;
 
 import junit.framework.Assert;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class ParseTest {
+
 
     @Test
     public void indexOf() {
@@ -70,4 +72,9 @@ public class ParseTest {
 
     }
 
+    @Test
+    public void cloneTest() {
+        JSONObject test = new JSONObject("{'a': [{'b':42}, {'a':12, 'b':11}, 'GERONIMO', {'a':12, 'b': 70, 'c': 11}]}");
+        Assert.assertTrue(test.similar(JSONUtils.recursiveClone(test)));
+    }
 }
