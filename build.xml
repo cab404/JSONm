@@ -1,0 +1,34 @@
+<project name="JSONm">
+    <target name="test">
+        <delete dir="bin" />
+        <mkdir dir="bin" />
+
+        <delete dir="reports" />
+        <mkdir dir="reports" />
+
+        <javac includeantruntime="false" srcdir="test/src:src" destdir="bin">
+          <classpath>
+            <fileset dir="test/lib"/>
+            <fileset dir="lib"/>
+          </classpath>
+        </javac>
+
+        <junit printsummary="yes" haltonfailure="yes">
+          <classpath>
+            <pathelement path="bin"/>
+            <fileset dir="test/lib"/>
+            <fileset dir="lib"/>
+          </classpath>
+
+          <formatter type="plain" usefile="true"/>
+
+          <batchtest fork="yes" todir="reports">
+            <fileset dir="test/src">
+              <include name="**/*.java"/>
+            </fileset>
+          </batchtest>
+
+        </junit>
+
+    </target>
+</project>
