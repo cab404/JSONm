@@ -107,9 +107,9 @@ public class SimpleJSONTemplate implements JSONTemplate {
 
             Object current_leaf = result;
 
-            /* Going down to out destination */
-            for (int $deep = 0; $deep < address.size() - 1; $deep++)
-                current_leaf = address.get($deep).move(current_leaf);
+            /* Going down to our destination */
+            for (int deep = 0; deep < address.size() - 1; deep++)
+                current_leaf = address.get(deep).move(current_leaf);
 
             /* Getting last piece of address and setting value it's pointing to given parameter*/
             address.get(address.size() - 1).set(current_leaf, parameters[index]);
