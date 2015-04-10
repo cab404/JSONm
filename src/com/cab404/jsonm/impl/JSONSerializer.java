@@ -22,7 +22,7 @@ public class JSONSerializer<T> {
 
     protected final Map<String, Record> description;
 
-    protected static final Class[] JSON_COMPATIBLE = {
+    protected static final Class[] JSON_COMPATIBLE_PRIMITIVE = {
             Long.TYPE,
             Long.class,
             Double.TYPE,
@@ -38,12 +38,41 @@ public class JSONSerializer<T> {
 
     protected class Record {
         Putter putter;
+        Getter getter;
         Class clazz;
         Field field;
     }
 
+    /**
+     * Deserializer
+     */
     protected interface Putter {
-        public void put(Object obj, Field where, Object val) throws IllegalAccessException;
+        void put(Object obj, Field where, Object val) throws IllegalAccessException;
+    }
+
+    /**
+     * Serializer
+     */
+    protected interface Getter {
+        Object get(Object val);
+    }
+
+    protected static class DefaultGetter implements Getter {
+        public static final DefaultGetter INSTANCE = new DefaultGetter();
+
+        @Override
+        public Object get(Object val) {
+            return val;
+        }
+    }
+
+    protected static class EnumGetter implements Getter {
+        public static final EnumGetter INSTANCE = new EnumGetter();
+
+        @Override
+        public Object get(Object val) {
+            return ((Enum) val).name();
+        }
     }
 
     protected static class DefaultPutter implements Putter {
@@ -53,7 +82,16 @@ public class JSONSerializer<T> {
         public void put(Object obj, Field where, Object val) throws IllegalAccessException {
             where.set(obj, val);
         }
+    }
 
+    protected static class EnumPutter implements Putter {
+        public static final EnumPutter INSTANCE = new EnumPutter();
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void put(Object obj, Field where, Object val) throws IllegalAccessException {
+            where.set(obj, Enum.valueOf((Class<Enum>) where.getType(), val.toString()));
+        }
     }
 
     protected static class IntPutter implements Putter {
@@ -73,36 +111,49 @@ public class JSONSerializer<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    protected boolean isCompatible(Class cls) {
+        if (cls.isEnum()) return true;
+        for (Class d : JSON_COMPATIBLE_PRIMITIVE)
+            if (cls.isAssignableFrom(d))
+                return true;
+        return false;
+    }
 
+    @SuppressWarnings("EqualsBetweenInconvertibleTypes")
     public JSONSerializer(Class<T> clazz) {
         this.clazz = clazz;
         description = new HashMap<>();
 
         for (Field f : clazz.getFields()) {
             if ((f.getModifiers() & Modifier.STATIC) != 0) continue;
-            for (Class d : JSON_COMPATIBLE) {
-                if (f.getType().isAssignableFrom(d)) {
-                    Record record = new Record();
-                    record.clazz = d;
-                    record.field = f;
-                    if (f.getType().equals(Integer.class)) {
-                        record.putter = IntPutter.INSTANCE;
-                    } else if (f.getType().equals(Integer.class)) {
-                        record.putter = IntPutter.INSTANCE;
-                    } else
-                        record.putter = DefaultPutter.INSTANCE;
+            Class cls = f.getType();
 
-                    description.put(f.getName(), record);
-                    break;
-                }
+            if (!isCompatible(cls)) continue;
+
+            Record record = new Record();
+            record.clazz = cls;
+            record.field = f;
+            record.putter = DefaultPutter.INSTANCE;
+            record.getter = DefaultGetter.INSTANCE;
+
+            if (cls.equals(Integer.class)) {
+                record.putter = IntPutter.INSTANCE;
+            } else if (cls.equals(Integer.class)) {
+                record.putter = IntPutter.INSTANCE;
+            } else if (cls.isEnum()) {
+                record.putter = EnumPutter.INSTANCE;
+                record.getter = EnumGetter.INSTANCE;
             }
+
+            description.put(f.getName(), record);
         }
 
     }
 
     public JSONObject serialize(T what, JSONObject to) throws IllegalAccessException, JSONException {
         for (Record rec : description.values()) {
-            to.put(rec.field.getName(), rec.field.get(what));
+            to.put(rec.field.getName(), rec.getter.get(rec.field.get(what)));
         }
         return to;
     }

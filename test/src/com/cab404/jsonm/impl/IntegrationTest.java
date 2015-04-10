@@ -78,6 +78,11 @@ public class IntegrationTest {
     }
 
     public static class TestClass0 {
+        public enum TE {
+            o1, o2, o3
+        }
+
+        public TE tst = TE.o1;
         public int intVal = 42;
         public long longVal = 90000000000000001l;
     }
@@ -89,13 +94,18 @@ public class IntegrationTest {
         TestClass0 obj = new TestClass0();
         JSONObject serialized = serializer.serialize(obj, new JSONObject());
 
-        Assert.assertTrue(new JSONObject("{'intVal':42,'longVal':90000000000000001}").similar(serialized));
+        Assert.assertTrue(
+                new JSONObject("{'intVal':42,'longVal':90000000000000001, 'tst':'o1'}")
+                        .similar(serialized)
+        );
 
         serialized.put("intVal", 71);
         serialized.put("longVal", 88);
+        serialized.put("tst", "o2");
 
         serializer.deserialize(serialized, obj);
 
+        Assert.assertEquals(obj.tst, TestClass0.TE.o2);
         Assert.assertEquals(obj.intVal, 71);
         Assert.assertEquals(obj.longVal, 88);
 
