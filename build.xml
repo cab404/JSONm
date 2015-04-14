@@ -1,4 +1,23 @@
 <project name="JSONm">
+
+    <target name="jar">
+
+        <delete dir="bin" />
+        <mkdir dir="bin" />
+        <mkdir dir="jar" />
+
+        <javac includeantruntime="false" srcdir="src" destdir="bin">
+            <classpath>
+                <fileset dir="lib"/>
+            </classpath>
+        </javac>
+
+        <jar basedir="bin" destfile="jar/${ant.project.name}.jar"/>
+        <jar basedir="src" destfile="jar/${ant.project.name}-sources.jar"/>
+
+
+    </target>
+
     <target name="test">
         <delete dir="bin" />
         <mkdir dir="bin" />
@@ -29,6 +48,6 @@
           </batchtest>
 
         </junit>
-
     </target>
+
 </project>

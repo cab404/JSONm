@@ -1,5 +1,6 @@
 .idea/
 out/
+jar/
 *.iml
 bin/
 reports/
