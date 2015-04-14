@@ -78,6 +78,7 @@ public class IntegrationTest {
     }
 
     public static class TestClass0 {
+        private int priv = 0;
         public enum TE {
             o1, o2, o3
         }
