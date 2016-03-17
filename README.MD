@@ -13,7 +13,7 @@ maker.make("request", "SOME_MD_HASH", "login");
 // {'auth': {'session_id': 'SOME_MD_HASH'}, 'request': 'login'}
 ```
 
-### A little but more complicated examle
+### A little bit more complicated example
 ```java
 // all stuff from previous example
 maker.add("request-data", "{'method':*, 'uri':*, 'body':*}");
