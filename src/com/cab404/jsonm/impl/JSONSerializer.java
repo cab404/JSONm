@@ -139,8 +139,6 @@ public class JSONSerializer<T> {
 
             if (cls.equals(Integer.class)) {
                 record.putter = IntPutter.INSTANCE;
-            } else if (cls.equals(Integer.class)) {
-                record.putter = IntPutter.INSTANCE;
             } else if (cls.isEnum()) {
                 record.putter = EnumPutter.INSTANCE;
                 record.getter = EnumGetter.INSTANCE;
